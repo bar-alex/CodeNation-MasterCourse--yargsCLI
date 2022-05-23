@@ -8,17 +8,21 @@ const { addMovie, listMovies } = require("./utils");
 
 const app = (yargsObj) => {
 
-    console.log(yargsObj);
+    // console.log(yargsObj);
 
     if (yargsObj.add) {
     
+        // normalize naming
+        if(yargsObj.actor && !yargsObj.actors) 
+            yargsObj.actors = yargsObj.actor
+
         // for a single title
         if (yargsObj.title) {
             // capture user input and create a movieObj
             const movieObj = { 
                     title: yargsObj.title, 
-                    actor: (yargsObj.actor && yargsObj.actor.indexOf(',')>-1) 
-                            ? yargsObj.actor.split(',').map( it => it.trim() )      // "actor, actor" => ["actor", "actor"]
+                    actors: (yargsObj.actors && yargsObj.actors.indexOf(',')>-1) 
+                            ? yargsObj.actors.split(',').map( it => it.trim() )      // "actor, actor" => ["actor", "actor"]
                             : [],      // undefined is fine, or i could use ??
                 };
             // console.log(movieObj);;
@@ -36,7 +40,7 @@ const app = (yargsObj) => {
                 .map( it => { 
                     return { 
                         title: it.split(':')[0],                                    // title
-                        actor: it.split(':')[1] 
+                        actors: it.split(':')[1] 
                             ? it.split(':')[1].split(',').map( it => it.trim() )
                             : [],  // array of actors
                     } } ) // title:'', actor:[]
@@ -47,10 +51,12 @@ const app = (yargsObj) => {
         };
     }
 
-    if(yargsObj.usage){
+    if(yargsObj.usage || yargsObj.info){
         const helpText = '\nAdds movies to the list, can be used in the following formats: \n' 
-            +`  node ${ yargsObj['$0'] } --add --title "<movie title>" --actor "<actor>[, <actor2>, .. <actorN>]"\n`
+            +`  node ${ yargsObj['$0'] } --add --title "<movie title>" --actors "<actor>[, <actor2>, .. <actorN>]"\n`
             +`  node ${ yargsObj['$0'] } --add --titles "<movie title> : <actor> [, <actor2>, .. <actorN>] ; <movie title> : <actor> [, <actor2>, .. <actorN>]"\n`
+            +`  node ${ yargsObj['$0'] } --<usage | --info>\n`
+
         console.log(helpText);
     }
 }
